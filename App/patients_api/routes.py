@@ -1,7 +1,7 @@
 import json
-from flask import Blueprint, request, jsonify
-from data.data import calc_df, mass_df, pd
-from data.data import extract_unique_values
+import pandas as pd
+from flask import Blueprint, jsonify
+from data.data import calc_df, mass_df, extract_unique_values
 patients_bp = Blueprint('patients', __name__)
 
 
@@ -16,9 +16,16 @@ def filter_by(df: pd.DataFrame, filters: dict):
 
 @patients_bp.route('/', methods=['GET'])
 def patients():
-    merges = pd.merge(calc_df, mass_df, on='patient_id', how='outer')
-    json_data = merges.set_index('patient_id').to_json(orient='index')
-    return jsonify(json_data)
+    merged = pd.merge(calc_df, mass_df, how='outer')
+    result_dict = {}
+    
+    grouped = merged.groupby('patientId')
+    for patient_id, group in grouped:
+        rows_list = group.drop(columns='patientId').to_dict(orient='records')
+        result_dict[patient_id] = rows_list
+    
+    realJson = json.dumps(result_dict, default=str)
+    return jsonify(realJson), 200
 
 @patients_bp.route('/ids', methods=['GET'])
 def patient_ids():
