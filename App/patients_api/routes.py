@@ -17,3 +17,15 @@ def patients():
     
     realJson = json.dumps(patients, default=str)
     return jsonify(realJson), 200
+
+@patients_bp.route('/<patientId>', methods=['GET'])
+def patient(patientId):
+    patient= []
+
+    for df in [calcDf, massDf]:
+        for index, row in df.iterrows():
+            if row['patientId'] == patientId:
+                patient.append(row.dropna().drop('patientId').to_dict())
+    
+    realJson = json.dumps(patient, default=str)
+    return jsonify(realJson), 200
