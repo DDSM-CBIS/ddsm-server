@@ -1,6 +1,7 @@
 App/.DS_Store
 cache/
-tciaDownload/
+__pycache__/
+/__pycache__/
 **/__pycache__/
 *.py[cod]
 *$py.class
