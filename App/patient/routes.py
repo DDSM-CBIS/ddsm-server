@@ -1,5 +1,5 @@
 from flask import Blueprint, abort, jsonify, request
-from app import series_mng, data_mng
+from App import series_mng, data_mng
 
 patients_bp = Blueprint('patients', __name__)
 
