@@ -19,6 +19,7 @@ def filter_options_mass():
 @filter_bp.route('/patients-ids', methods=['GET'])
 def filter_options_patients():
     response = data_mng.get_patient_ids()
-    res_str = json.dumps(response, default=str)
+    result = {"patientsIds": response}
+    res_str = json.dumps(result, default=str)
     return jsonify(res_str), 200
 

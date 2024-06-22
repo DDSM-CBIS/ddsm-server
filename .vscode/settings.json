@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["dropna", "jsonify", "patientids"]
+  "cSpell.words": ["dropna", "jsonify", "nbia", "patientids", "tcia", "uids"],
+  "pylint.args": ["--disable=missing-class-docstring", "--disable=missing-function-docstring"]
 }

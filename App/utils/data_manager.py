@@ -80,7 +80,7 @@ class DataManager:
         return unique_values
 
     def get_patient_ids(self):
-        return self.df["patient_id"].unique()
+        return self.df["patient_id"].unique().tolist()
         
     def get_patients_data(self, keys_format: str = "camel", include_file_path : bool = False, patient_id = None):
         """
