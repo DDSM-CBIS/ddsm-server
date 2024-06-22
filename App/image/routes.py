@@ -17,5 +17,3 @@ def get_image():
         return abort(404, description="Image not found")
 
     return send_file(res, mimetype="image/jpeg"), 200
-
-

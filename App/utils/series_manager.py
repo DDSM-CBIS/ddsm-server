@@ -17,7 +17,7 @@ class SeriesManager:
     def set_config(self, config):
         self.config = config
 
-    def get_base_url(self, route: str, params: list = []):
+    def get_base_url(self, route: str, params: list = []) -> str:  
         base = self.config["base_url"]
         
         if route == "getSeries" and len(params) == 1:

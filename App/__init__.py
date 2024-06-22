@@ -7,11 +7,12 @@ data_mng = DataManager()
 
 def create_app():
     app = Flask(__name__)
+    register_blueprints(app)
+    configure_database()
+    return app
 
-    series_mng.start(config)
-    data_mng.start(config)
-
-    from App.filter.routes import filter_bp
+def register_blueprints(app):
+    from app.filter.routes import filter_bp
     app.register_blueprint(filter_bp, url_prefix='/filter')
 
     from App.image.routes import images_bp
@@ -20,4 +21,7 @@ def create_app():
     from App.patient.routes import patients_bp
     app.register_blueprint(patients_bp, url_prefix='/patients')
 
-    return app
+
+def configure_database():
+    series_mng.start(config)
+    data_mng.start(config)
