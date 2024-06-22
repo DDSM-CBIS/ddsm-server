@@ -1,6 +1,6 @@
 
 from flask import Blueprint, send_file, request, abort
-from App import series_mng
+from app import series_mng
 
 images_bp = Blueprint('images', __name__)
 

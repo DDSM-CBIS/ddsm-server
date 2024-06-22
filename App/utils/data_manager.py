@@ -37,11 +37,11 @@ class DataManager:
         if keys_format == 'camel':
             return re.sub(r'_([a-z])', lambda x: x.group(1).upper(), key)
         elif keys_format == 'snake':
-            return key
+            return re.sub(r'([A-Z])', lambda x: '_' + x.group(1).lower(), key)
         elif keys_format == 'camel_space':
             return re.sub(r'_([a-z])', lambda x: ' ' + x.group(1).upper(), key)
         elif keys_format == 'upper-snake':
-            return key.upper()
+            return re.sub(r'([A-Z])', lambda x: '_' + x.group(1), key).upper()
         else:
             raise ValueError("Invalid keys_format. Options are 'camel', 'snake', 'camel_space', 'upper-snake'")
 
@@ -123,6 +123,36 @@ class DataManager:
             patients_dict[p_id] = patient_list
 
         return patients_dict
+    
+    def filter_patients(self, filters):
+        """
+        Filter patients data
+
+        Parameters
+        ----------
+        filters: dict
+            The filters to apply to the data
+        
+        Returns
+        -------
+        dict
+            The filtered data
+        """
+        filtered_df = self.df
+        merged_filters = {}
+        for key, value in filters.items():
+            for filter_key in value:
+                filter_key_formatted = self.convert_key_format(filter_key, "snake")
+                merged_filters[filter_key_formatted] = value[filter_key]
+
+        if not merged_filters:
+            return self.get_patient_ids()
+        
+        for column, values in merged_filters.items():
+            if column in self.df.columns:
+                filtered_df = filtered_df[filtered_df[column].isin(values)]
+    
+        return filtered_df['patient_id'].unique().tolist()
 
     def start(self, config):
         self.set_config(config)
