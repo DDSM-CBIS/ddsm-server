@@ -1,6 +1,6 @@
 import json
 from flask import Blueprint, jsonify
-from app import data_mng
+from App import data_mng
 
 filter_bp = Blueprint('filter', __name__)
 
