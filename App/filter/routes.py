@@ -1,6 +1,6 @@
 import json
 from flask import Blueprint, jsonify
-from App import data_mng
+from app import data_mng
 
 filter_bp = Blueprint('filter', __name__)
 
@@ -22,4 +22,3 @@ def filter_options_patients():
     result = {"patientsIds": response}
     res_str = json.dumps(result, default=str)
     return jsonify(res_str), 200
-

@@ -1,5 +1,6 @@
+import json
 from flask import Blueprint, abort, jsonify, request
-from App import series_mng, data_mng
+from app import series_mng, data_mng
 
 patients_bp = Blueprint('patients', __name__)
 
@@ -30,3 +31,16 @@ def get_image_metadata(patient_id):
         image_metadata[uid] = sop_uids
 
     return jsonify(image_metadata), 200
+
+@patients_bp.route('/filter', methods=['GET'])
+def filter_patients():
+    filters = request.args.get('filters')
+    
+    if not filters:
+        return abort(400, description="Missing filters")
+    
+    filters_dict = json.loads(filters)
+    response = data_mng.filter_patients(filters_dict)
+    result = {"patientsIds": response}
+    res_str = json.dumps(result, default=str)
+    return jsonify(res_str), 200
