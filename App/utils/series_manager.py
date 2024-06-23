@@ -1,6 +1,5 @@
 import pandas as pd
 from pathlib import Path
-import zipfile
 import requests
 import os
 import pydicom
@@ -30,7 +29,7 @@ class SeriesManager:
             return base + "getImage?NewFileNames=Yes&SeriesInstanceUID=" + params[0]
         return base
         
-    def load_series(self):    
+    def load_series(self):
         base_url = self.get_base_url(route="getSeries", params=[self.config["series_name"]])
         response = requests.get(base_url, timeout=30)
         self.series = pd.DataFrame(response.json())
@@ -56,6 +55,25 @@ class SeriesManager:
             result.append(item["SOPInstanceUID"])
         return result
     
+    def get_image_metadata(self, uid: str):
+        patient_id = self.series[self.series["SeriesInstanceUID"] == uid]["PatientID"].values[0]
+        parts = patient_id.split("_")
+
+        if len(parts) != 5:
+            return "Invalid patient ID format. Expected format: <class>_<patient_id>_<left_or_right_breast>_<image_view>", 400
+        
+        sop_uids = self.get_sop_uids(uid)
+        if sop_uids is None:
+            return "No SOP UID found for the given series instance UID", 404
+        
+        result = {
+            "class": parts[0],
+            "leftOrRightBreast": parts[3],
+            "imageView": parts[4],
+            "sopUIDs": self.get_sop_uids(uid)
+        }
+        return result
+    
     def get_image_by_uids(self, uid: str, sop_uid: str):
         root_dir = os.path.dirname(os.path.abspath(__file__))
         image_folder = os.path.join(root_dir, '..', "..",'cache', 'images', f'{uid}')
@@ -70,7 +88,7 @@ class SeriesManager:
             response = requests.get(base_url, stream=True, timeout=30)
             
             if response.status_code != 200:
-                return None
+                return "Image not found", 404
             
             with open(image_path, 'wb') as file:
                 file.write(response.content)
@@ -86,43 +104,6 @@ class SeriesManager:
         img_io = BytesIO()
         pil_image.save(img_io, 'JPEG')
         img_io.seek(0)
-        return img_io
-
-    
-    def download_images(self, patient_id: str, uid: str):
-        root_dir = os.path.dirname(os.path.abspath(__file__))
-        image_folder = os.path.join(root_dir, '..', "..",'cache', 'images', f'{patient_id}')
-
-        if not os.path.exists(image_folder):
-            path = Path(image_folder)
-            path.mkdir(parents=True)
-
-        base_url = self.get_base_url(route="getImage", params=[uid])
-        response = requests.get(base_url, stream=True, timeout=30)
-
-        if response.status_code != 200:
-            return None
-        
-        with zipfile.ZipFile(BytesIO(response.content)) as file:
-            file.extractall(image_folder)
-
-        dicom_paths = [os.path.join(image_folder, f) for f in os.listdir(image_folder) if os.path.isfile(os.path.join(image_folder, f)) and f.endswith(".dcm")]
-        
-        return dicom_paths
-    
-    def get_image(self, dicom_path):
-        dicom = pydicom.dcmread(dicom_path)
-        image = apply_voi_lut(dicom.pixel_array, dicom)
-
-        image = image - np.min(image)
-        image = (image / np.max(image) * 255).astype(np.uint8)
-
-        pil_image = Image.fromarray(image)
-
-        img_io = BytesIO()
-        pil_image.save(img_io, 'JPEG')
-        img_io.seek(0)
-        
         return img_io
 
     def start(self, config):
