@@ -70,7 +70,7 @@ class SeriesManager:
             "class": parts[0],
             "leftOrRightBreast": parts[3],
             "imageView": parts[4],
-            "sopUIDs": self.get_sop_uids(uid)
+            "sopUIDs": sop_uids
         }
         return result
     
