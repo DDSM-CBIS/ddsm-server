@@ -11,7 +11,7 @@ def patients():
 
 @patients_bp.route('/<patient_id>', methods=['GET'])
 def patient(patient_id):
-    response = data_mng.get_patients_data(patient_id)
+    response = data_mng.get_patients_data("camel", False,patient_id)
     return jsonify(response), 200
 
 @patients_bp.route('/filter', methods=['GET'])

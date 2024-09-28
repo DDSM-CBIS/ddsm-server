@@ -8,17 +8,22 @@ def get_image_metadata(patient_id):
     image_format = request.args.get('format')
     if not image_format:
         return abort(400, description="Missing image format")
-
+    
+    image_count = 0
     series_instance_uids = series_mng.get_patient_series_instance_uids(patient_id, image_format)
-    image_metadata = {}
+    response = {}
+    images_metadata = {}
     for uid in series_instance_uids:
         metadata = series_mng.get_image_metadata(uid)
         if isinstance(metadata, tuple):
             return abort(metadata[1], description=metadata[0])
         
-        image_metadata[uid] = metadata
+        images_metadata[uid] = metadata
+        image_count += 1
 
-    return jsonify(image_metadata), 200
+    response["imagesMetadata"] = images_metadata
+    response["imageCount"] = image_count
+    return jsonify(response), 200
 
 @images_bp.route('/full', methods=['GET'])
 def get_image():

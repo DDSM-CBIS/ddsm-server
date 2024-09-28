@@ -76,7 +76,7 @@ class DataManager:
             if col in self.df.columns:
                 unique_values[col].update(self.df[col].dropna().unique())
             
-        unique_values = {self.convert_key_format(k, keys_format): list(v) for k, v in unique_values.items()}
+        unique_values = {self.convert_key_format(k, keys_format): sorted(list(v)) for k, v in unique_values.items()}
         return unique_values
 
     def get_patient_ids(self):
