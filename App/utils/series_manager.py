@@ -59,7 +59,7 @@ class SeriesManager:
         patient_id = self.series[self.series["SeriesInstanceUID"] == uid]["PatientID"].values[0]
         parts = patient_id.split("_")
 
-        if len(parts) != 5:
+        if len(parts) < 5:
             return "Invalid patient ID format. Expected format: <class>_<patient_id>_<left_or_right_breast>_<image_view>", 400
         
         sop_uids = self.get_sop_uids(uid)
