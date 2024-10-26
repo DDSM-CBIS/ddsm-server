@@ -1,16 +1,30 @@
 # DDSM_CBIS_photos_server
-This is a flask server that implements a smart handaling of requests to cbis-ddsm. 
-The goal is to allow simple access to photos for out electron app
 
-## Usage 
-first of all should install requierments
+Flask server that handles data retrieval and processing, interacting with the CBIS-DDSM dataset to serve relevant data to the [Electron app](https://github.com/DDSM-CBIS/ddss-electron). The backend processes queries, retrieves patient metadata, and returns filtered results.
 
-~~~bash
+## Pre-Requisites
+
+To use the following project, please make sure you have the following installed:
+
+- [python](https://www.python.org/downloads/)
+- [Client](https://github.com/DDSM-CBIS/ddss-electron)
+
+- Clone the repository:
+
+```bash
+git clone https://github.com/DDSM-CBIS/ddss-server.git
+```
+
+## Usage
+
+Install requirements:
+
+```bash
 pip install -r ./requierments.txt
-~~~
+```
 
-then should run the server
+Run the server:
 
-~~~bash
+```bash
 python3 run.py
-~~~
+```
